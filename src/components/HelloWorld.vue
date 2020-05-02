@@ -32,52 +32,56 @@
               <v-col
                 v-for="actividad in listaActividades"
                 :key="actividad.id"
-                sm="6"
+                sm="12"
                 class="d-flex justify-start align-center"
               >
                 <v-row>
                   <v-col cols="12">
-                    <v-chip class="ma-2" large :color="colores[actividad.completada]" outlined>
+                    <v-chip
+                      class="mx-2"
+                      large
+                      :color="colores[actividad.completada]"
+                      outlined
+                    >
                       <v-icon left>mdi-file-document-outline</v-icon>
                       <h1 class="headline">{{ actividad.actividad }}</h1>
-                      
-                      <v-btn
-                        class="mx-2"
-                        fab
-                        dark
-                        x-small
-                        color="success"
-                        @click="completarActividad(actividad)"
-                        outlined
-                      >
-                        <v-icon dark>mdi-check</v-icon>
-                      </v-btn>
-                      <v-btn
-                        class="mx-2"
-                        fab
-                        dark
-                        x-small
-                        color="primary"
-                        @click="editarActividad(actividad)"
-                        outlined
-                      >
-                        <v-icon dark>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn
-                        class="mx-2"
-                        fab
-                        dark
-                        x-small
-                        color="red darken-1"
-                        @click="eliminarActividad(actividad)"
-                        outlined
-                      >
-                        <v-icon dark>mdi-close</v-icon>
-                      </v-btn>
                     </v-chip>
+                    <v-btn
+                      class="mx-2"
+                      fab
+                      dark
+                      x-small
+                      color="success"
+                      @click="completarActividad(actividad)"
+                      outlined
+                    >
+                      <v-icon dark>mdi-check</v-icon>
+                    </v-btn>
+                    <v-btn
+                      class="mx-2"
+                      fab
+                      dark
+                      x-small
+                      color="blue"
+                      @click="editarActividad(actividad)"
+                      outlined
+                    >
+                      <v-icon dark>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn
+                      class="mx-2"
+                      fab
+                      dark
+                      x-small
+                      color="red"
+                      @click="eliminarActividad(actividad)"
+                      outlined
+                    >
+                      <v-icon dark>mdi-close</v-icon>
+                    </v-btn>
                   </v-col>
                   <v-row justify="center">
-                    <v-col v-if="actividad.editar" cols="6">
+                    <v-col v-if="actividad.editar" cols="12">
                       <v-text-field
                         color="black"
                         :disabled="!actividad.editar"
@@ -118,50 +122,37 @@
 
 <script>
 import { db } from "../firebase/firebase";
+
 export default {
   name: "HelloWorld",
 
   data: () => ({
     nuevaActividad: "",
+    colores: ["orange darken-3", "green darken-2"],
     listaActividades: [
       {
         id: 1,
-        actividad: "Pasear perro",
-        completada: 0,
-        editar: false,
-      },
-      {
-        id: 2,
-        actividad: "Pasear perro",
-        completada: 0,
-        editar: false,
-      },
-      {
-        id: 3,
-        actividad: "Pasear perro",
+        actividad: "Pasear",
         completada: 0,
         editar: false,
       },
     ],
-    colores: ['orange darken-3','green darken-2'],
   }),
-  firebase: {
-    listaActividades: db.ref("actividades"),
-  },
   methods: {
-    agregarActividad(nuevaActividad) {
-      var newPostKey = db.ref("actividades").push().key;
-      db.ref("actividades/" + newPostKey).set({
-        id: newPostKey,
-        actividad: nuevaActividad,
+    agregarActividad(actividad) {
+      var nuevallave = db.ref("actividades").push().key;
+      db.ref("actividades/" + nuevallave).set({
+        id: nuevallave,
+        actividad: actividad,
         completada: 0,
         editar: false,
       });
-      this.nuevaActividad = '';
+      this.nuevaActividad = "";
+      alert("Actividad agregada exitosamente!");
     },
     eliminarActividad(actividad) {
       db.ref("actividades/" + actividad.id).remove();
-      alert("Tarea eliminada con éxito");
+      alert("Actividad eliminada exitosamente...");
     },
     editarActividad(actividad) {
       actividad.editar = true;
@@ -181,20 +172,22 @@ export default {
         }
       });
     },
-    completarActividad(actividad){
+    completarActividad(actividad) {
       actividad.completada = 1;
       var actualizar = {};
       actualizar["/actividades/" + actividad.id] = actividad;
-      
+
       db.ref().update(actualizar, function(error) {
         if (error) {
-          // The write failed...
+          alert("No se puedo actualizar");
         } else {
-          alert("Actividad completada correctamente!");
+          alert("Actividad completada correctamente");
         }
       });
-
-    }
+    },
+  },
+  firebase: {
+    listaActividades: db.ref("actividades"),
   },
 };
 </script>
